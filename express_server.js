@@ -1,6 +1,6 @@
 const express = require("express");
 const app = express();
-const PORT = 8080; // default port 8080
+const PORT = 8080;
 
 app.set("view engine", "ejs");
 
@@ -25,19 +25,31 @@ app.get("/urls.json", (req, res) => {
 });
 
 //redirect links
-app.get("/u/:shortURL", (req, res) => {
-  const longURL = urlDatabase[req.params.shortURL];
-  res.redirect(longURL);
+//When sending variables to an EJS template, we need to send them inside an object, even if we are only sending one variable. This is so we can use the key of that variable
+app.get("/urls", (req, res) => {
+  const templateVars = { 
+    urls: urlDatabase 
+  };
+  res.render("urls_index", templateVars);
 });
 
 app.get("/urls/new", (req, res) => {
   res.render("urls_new");
 });
 
-// app.get("/urls/:id", (req, res) => {
- 
-// });
+app.get("/urls/:id", (req, res) => {
+  const templateVars = {
+    longURL: urlDatabase[req.params.id].longURL,
+    shortURL: req.params.id
+  };
+  return res.render("urls_show", templateVars);
+});
 //is the urls/id the same as urls shortURL?
+
+app.get("/u/:shortURL", (req, res) => {
+  const longURL = urlDatabase[req.params.shortURL];
+  res.redirect(longURL);
+});
 
 // The : in front of id indicates that id is a route parameter. This means that the value in this part of the url will be available in the req.params object.
 //to show the user the newly created link
@@ -49,13 +61,6 @@ app.get("/urls/:shortURL", (req, res) => {
   res.render("urls_show", templateVars);
 });
 
-//When sending variables to an EJS template, we need to send them inside an object, even if we are only sending one variable. This is so we can use the key of that variable
-app.get("/urls", (req, res) => {
-  const templateVars = { 
-    urls: urlDatabase 
-  };
-  res.render("urls_index", templateVars);
-});
 
 //HomePage
 app.get("/", (req, res) => {
@@ -66,18 +71,35 @@ app.get("/", (req, res) => {
 
 
 //POST
+app.post("/urls", (req, res) => {
+  const shortURL = generateRandomString();
+  let longURL = req.body.longURL;
+  urlDatabase[shortURL] = { longURL: longURL};
+  res.redirect("/urls");
+});
+
+app.post("/urls/:id/update", (req, res) => {
+  let shortURL = req.params.id;
+  // console.log("shortURL: ", shortURL);
+  let longURL = req.body.longURL;
+  // console.log("longURL: ",longURL);
+  urlDatabase[shortURL] = longURL;
+  // console.log("store short & LongURL :", shortURL, longURL);
+  res.redirect("/urls");
+});
+
+// app.post("/urls/:id", (req, res) => {
+//   let shortURL = req.params.shortURL;
+//   let longURL = req.body.longURL;
+//   res.redirect("/urls");
+// });
+
 app.post("/urls/:shortURL/delete", (req, res) => {
-  shortURL = req.params.shortURL;
+  const shortURL = req.params.shortURL;
   delete urlDatabase[shortURL];
   res.redirect("/urls");
 });
 
-
-
-app.post("/urls", (req, res) => {
-  console.log(req.body);  // Log the POST request body to the console
-  res.redirect("/urls/:shortURL");
-});
 
 
 
