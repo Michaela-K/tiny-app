@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/Michaela-K/tiny-app#readme",
   "dependencies": {
+    "ejs": "^3.1.6",
     "express": "^4.17.3"
   }
 }
