@@ -7,6 +7,9 @@ app.set("view engine", "ejs");
 const bodyParser = require("body-parser");
 app.use(bodyParser.urlencoded({extended: true}));
 
+const cookieParser = require('cookie-parser')
+app.use(cookieParser())
+
 
 
 const urlDatabase = {
@@ -27,8 +30,11 @@ app.get("/urls.json", (req, res) => {
 //redirect links
 //When sending variables to an EJS template, we need to send them inside an object, even if we are only sending one variable. This is so we can use the key of that variable
 app.get("/urls", (req, res) => {
+  let username = req.cookies["username"];
+  console.log("GETUrlsUsername", username);
   const templateVars = { 
-    urls: urlDatabase 
+    urls: urlDatabase,
+    username: req.cookies["username"]
   };
   res.render("urls_index", templateVars);
 });
@@ -40,27 +46,38 @@ app.get("/urls/new", (req, res) => {
 app.get("/urls/:id", (req, res) => {
   const templateVars = {
     longURL: urlDatabase[req.params.id].longURL,
-    shortURL: req.params.id
+    shortURL: req.params.id,
+    username: req.cookies["username"],
   };
   return res.render("urls_show", templateVars);
 });
 //is the urls/id the same as urls shortURL?
 
-app.get("/u/:shortURL", (req, res) => {
-  const longURL = urlDatabase[req.params.shortURL];
-  res.redirect(longURL);
-});
 
 // The : in front of id indicates that id is a route parameter. This means that the value in this part of the url will be available in the req.params object.
 //to show the user the newly created link
 app.get("/urls/:shortURL", (req, res) => {
   const templateVars = { 
     shortURL: req.params.shortURL, 
-    longURL: req.params.longURL 
+    longURL: req.params.longURL,
+    username: req.cookies["username"] 
   };
   res.render("urls_show", templateVars);
 });
 
+app.get("/u/:shortURL", (req, res) => {
+  const longURL = urlDatabase[req.params.shortURL];
+  res.redirect(longURL);
+});
+
+app.get("/login", (req, res) => {
+  const templateVars = { 
+    shortURL: req.params.shortURL, 
+    longURL: req.params.longURL,
+    username: req.cookies["username"]
+  };
+  res.render("urls_login", templateVars);
+});
 
 //HomePage
 app.get("/", (req, res) => {
@@ -74,8 +91,15 @@ app.get("/", (req, res) => {
 app.post("/urls", (req, res) => {
   const shortURL = generateRandomString();
   const longURL = req.body.longURL;
-  console.log(shortURL, longURL);
+  console.log("shorturl & longURL", shortURL, longURL);
   urlDatabase[shortURL] = longURL;
+  res.redirect("/urls");
+});
+
+app.post("/login", (req, res) => {
+  let username = req.body["username"];
+  // console.log(username);
+  res.cookie("name", username);
   res.redirect("/urls");
 });
 
