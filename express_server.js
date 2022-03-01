@@ -30,11 +30,11 @@ app.get("/urls.json", (req, res) => {
 //redirect links
 //When sending variables to an EJS template, we need to send them inside an object, even if we are only sending one variable. This is so we can use the key of that variable
 app.get("/urls", (req, res) => {
-  let username = req.cookies["username"];
-  console.log("GETUrlsUsername", username);
+  let username = req.cookies.name;
+  console.log("GET urls username",username);
   const templateVars = { 
     urls: urlDatabase,
-    username: req.cookies["username"]
+    username: req.cookies.name
   };
   res.render("urls_index", templateVars);
 });
