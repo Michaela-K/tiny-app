@@ -59,7 +59,7 @@ app.get("/urls", (req, res) => {
 
 //HomePage
 app.get("/", (req, res) => {
-  res.send("Hello!");
+  res.render("urls_home")
 });
 
 
