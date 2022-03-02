@@ -18,15 +18,15 @@ const urlDatabase = {
 };
 
 const users = { 
-  "userRandomID": {
-    id: "userRandomID", 
+  "Wh1ym3": {
+    user_id: "Wh1ym3", 
     email: "user@example.com", 
-    password: "purple-monkey-dinosaur"
+    password: "purple"
   },
- "user2RandomID": {
-    id: "user2RandomID", 
+ "M0rL0v": {
+    user_id: "M0rL0v", 
     email: "user2@example.com", 
-    password: "dishwasher-funk"
+    password: "funky"
   }
 }
 
@@ -43,11 +43,12 @@ app.get("/urls.json", (req, res) => {
 //redirect links
 //When sending variables to an EJS template, we need to send them inside an object, even if we are only sending one variable. This is so we can use the key of that variable
 app.get("/urls", (req, res) => {
-  let username = req.cookies.name;
-  console.log("GET urls username",username);
+  let user_id = req.cookies.user_id;
+  console.log("user_id",user_id);
   const templateVars = { 
+    users: users,
     urls: urlDatabase,
-    username: req.cookies.name
+    user_id: req.cookies.user_id
   };
   res.render("urls_index", templateVars);
 });
@@ -56,7 +57,8 @@ app.get("/urls/new", (req, res) => {
   const templateVars = { 
     shortURL: req.params.shortURL, 
     longURL: req.params.longURL,
-    username: req.cookies.name
+    users: users,
+    user_id: req.cookies.user_id
   };
   res.render("urls_new", templateVars);
 });
@@ -65,7 +67,8 @@ app.get("/urls/:id", (req, res) => {
   const templateVars = {
     longURL: urlDatabase[req.params.id].longURL,
     shortURL: req.params.id,
-    username: req.cookies.name
+    users: users,
+    user_id: req.cookies.user_id
   };
   return res.render("urls_show", templateVars);
 });
@@ -78,7 +81,8 @@ app.get("/urls/:shortURL", (req, res) => {
   const templateVars = { 
     shortURL: req.params.shortURL, 
     longURL: req.params.longURL,
-    username: req.cookies.name
+    users: users,
+    user_id: req.cookies.user_id
   };
   res.render("urls_show", templateVars);
 });
@@ -92,7 +96,8 @@ app.get("/login", (req, res) => {
   const templateVars = { 
     shortURL: req.params.shortURL, 
     longURL: req.params.longURL,
-    username: req.cookies.name
+    users: users,
+    user_id: req.cookies.user_id
   };
   res.render("urls_login", templateVars);
 });
@@ -101,7 +106,8 @@ app.get("/register", (req, res) => {
   const templateVars = { 
     shortURL: req.params.shortURL, 
     longURL: req.params.longURL,
-    username: req.cookies.name
+    users: users,
+    user_id: req.cookies.user_id
   };
   res.render("urls_register", templateVars);
 });
@@ -109,7 +115,8 @@ app.get("/register", (req, res) => {
 //HomePage
 app.get("/", (req, res) => {
   const templateVars = { 
-    username: req.cookies.name
+    users: users,
+    user_id: req.cookies.user_id
   };
   res.render("urls_home", templateVars)
 });
@@ -128,24 +135,35 @@ app.post("/urls", (req, res) => {
 
 //post Logout
 app.post("/logout", (req, res) => {
-  res.clearCookie("name");
+  res.clearCookie("user_id");
   res.redirect("/urls");
 });
 
 app.post("/login", (req, res) => {
-  let username = req.body["username"];
-  // console.log(username);
-  res.cookie("name", username);
+  const email = req.body.email;
+  const password = req.body.password;
+  // console.log("users email", users);
+
+  // for(const user in users){
+  //   // console.log(users[user].email);
+  //   if(email === users[user].email){
+  //     console.log("email", email);
+  //     res.cookie(users[user].email);
+  //     // console.log(res)
+  // }
+  // }
   res.redirect("/urls");
 });
 
 app.post("/register", (req, res) => {
   const id = generateRandomString(); 
-  const user = req.body.email;
+  const user_id = id;
+  const email = req.body.email;
   const password = req.body.password;
-  console.log(id, user, password);
-  users[id] = {id, user, password}
-  console.log(users);
+  res.cookie("user_id", user_id);
+  users[id] = {user_id, email, password}
+  console.log(user_id, email, password);
+  // console.log(users);
   res.redirect("/urls");
 });
 
