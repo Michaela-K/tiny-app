@@ -93,6 +93,7 @@ app.get("/u/:shortURL", (req, res) => {
 });
 
 app.get("/login", (req, res) => {
+  
   const templateVars = { 
     shortURL: req.params.shortURL, 
     longURL: req.params.longURL,
@@ -160,11 +161,19 @@ app.post("/register", (req, res) => {
   const user_id = id;
   const email = req.body.email;
   const password = req.body.password;
-  res.cookie("user_id", user_id);
-  users[id] = {user_id, email, password}
-  console.log(user_id, email, password);
-  // console.log(users);
+
+  if (!email || !password) {
+    return res.status(403).send("Please provide both an email and password");
+  } else if (getUserByEmail(email, users)) {
+    return res
+      .status(403)
+      .send("An account already exists for this email address");
+  } else {
+    users[id] = {user_id, email, password}
+    res.cookie("user_id", user_id);
+    console.log(user_id, email, password);
   res.redirect("/urls");
+  }
 });
 
 app.post("/urls/:id/update", (req, res) => {
@@ -199,6 +208,16 @@ app.post("/urls/:shortURL/delete", (req, res) => {
 
 
 //HELPER FUNCTIONS
+
+function getUserByEmail(email, users) {
+  for (const user in users) {
+    if (users[user].email === email) {
+      return true;
+    }
+  }
+  return null;
+}
+
 function generateRandomString() {
   let length = 6;
   let result = "";
@@ -210,4 +229,3 @@ function generateRandomString() {
   }
   return result;
 }
-generateRandomString();
