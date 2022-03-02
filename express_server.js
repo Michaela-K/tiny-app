@@ -86,7 +86,10 @@ app.get("/login", (req, res) => {
 
 //HomePage
 app.get("/", (req, res) => {
-  res.render("urls_home")
+  const templateVars = { 
+    username: req.cookies.name
+  };
+  res.render("urls_home", templateVars)
 });
 
 
