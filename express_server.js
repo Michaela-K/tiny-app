@@ -139,6 +139,16 @@ app.post("/login", (req, res) => {
   res.redirect("/urls");
 });
 
+app.post("/register", (req, res) => {
+  const id = generateRandomString(); 
+  const user = req.body.email;
+  const password = req.body.password;
+  console.log(id, user, password);
+  users[id] = {id, user, password}
+  console.log(users);
+  res.redirect("/urls");
+});
+
 app.post("/urls/:id/update", (req, res) => {
   let shortURL = req.params.id;
   // console.log("shortURL: ", shortURL);
