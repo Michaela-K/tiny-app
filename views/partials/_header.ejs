@@ -5,10 +5,14 @@
       <span class="navbar-toggler-icon"></span>
     </button>
     <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
-      <div class="navbar-nav">
-        <a class="nav-item nav-link" href="/urls">My URLs</a>
-        <a class="nav-item nav-link" href="/urls/new">Create New URL</a>
-      </div>
+      <% if(username){ %>
+        <div class="navbar-nav">
+          <a class="nav-item nav-link" href="/urls">My URLs</a>
+          <a class="nav-item nav-link" href="/urls/new">Create New URL</a>
+        </div>
+        <% } else{ %>
+          <a class="nav-item nav-link" href="/urls/new">Get Started</a>
+        <% } %>
     </div>
 
       <div class =" d-flex justify-content-right">
@@ -16,7 +20,7 @@
           <form class="form-inline justify-content-right" action="/logout"  method="POST">
             <div class="form-group mb-2">
               <label for="logout" style="margin-right: 2em"> Logged in as: 
-              <%= username  %>
+              <%= username %>
               </label>
               <button type="submit" class="btn btn-outline-dark">Log Out</button>
             </div>
@@ -28,6 +32,6 @@
               <button type="submit" class="btn btn-outline-secondary" style="margin-right: 2rem">Log In</button>
             </div>
           </form>
-          <% } %>
+        <% } %>
   </nav>
 </header>

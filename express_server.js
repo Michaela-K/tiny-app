@@ -40,14 +40,19 @@ app.get("/urls", (req, res) => {
 });
 
 app.get("/urls/new", (req, res) => {
-  res.render("urls_new");
+  const templateVars = { 
+    shortURL: req.params.shortURL, 
+    longURL: req.params.longURL,
+    username: req.cookies.name
+  };
+  res.render("urls_new", templateVars);
 });
 
 app.get("/urls/:id", (req, res) => {
   const templateVars = {
     longURL: urlDatabase[req.params.id].longURL,
     shortURL: req.params.id,
-    username: req.cookies["username"],
+    username: req.cookies.name
   };
   return res.render("urls_show", templateVars);
 });
@@ -60,7 +65,7 @@ app.get("/urls/:shortURL", (req, res) => {
   const templateVars = { 
     shortURL: req.params.shortURL, 
     longURL: req.params.longURL,
-    username: req.cookies["username"] 
+    username: req.cookies.name
   };
   res.render("urls_show", templateVars);
 });
@@ -74,7 +79,7 @@ app.get("/login", (req, res) => {
   const templateVars = { 
     shortURL: req.params.shortURL, 
     longURL: req.params.longURL,
-    username: req.cookies["username"]
+    username: req.cookies.name
   };
   res.render("urls_login", templateVars);
 });
