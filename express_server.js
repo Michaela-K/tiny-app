@@ -84,6 +84,15 @@ app.get("/login", (req, res) => {
   res.render("urls_login", templateVars);
 });
 
+app.get("/register", (req, res) => {
+  const templateVars = { 
+    shortURL: req.params.shortURL, 
+    longURL: req.params.longURL,
+    username: req.cookies.name
+  };
+  res.render("urls_register", templateVars);
+});
+
 //HomePage
 app.get("/", (req, res) => {
   const templateVars = { 
