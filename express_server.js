@@ -46,7 +46,7 @@ app.get("/urls", (req, res) => {
   let user_id = req.cookies.user_id;
   console.log("user_id",user_id);
   const templateVars = { 
-    users: users,
+    user: users[user_id],
     urls: urlDatabase,
     user_id: req.cookies.user_id
   };
@@ -57,7 +57,7 @@ app.get("/urls/new", (req, res) => {
   const templateVars = { 
     shortURL: req.params.shortURL, 
     longURL: req.params.longURL,
-    users: users,
+    user: users[user_id],
     user_id: req.cookies.user_id
   };
   res.render("urls_new", templateVars);
@@ -67,7 +67,7 @@ app.get("/urls/:id", (req, res) => {
   const templateVars = {
     longURL: urlDatabase[req.params.id].longURL,
     shortURL: req.params.id,
-    users: users,
+    user: users[user_id],
     user_id: req.cookies.user_id
   };
   return res.render("urls_show", templateVars);
@@ -81,7 +81,7 @@ app.get("/urls/:shortURL", (req, res) => {
   const templateVars = { 
     shortURL: req.params.shortURL, 
     longURL: req.params.longURL,
-    users: users,
+    user: users[user_id],
     user_id: req.cookies.user_id
   };
   res.render("urls_show", templateVars);
@@ -98,7 +98,7 @@ app.get("/login", (req, res) => {
     shortURL: req.params.shortURL, 
     longURL: req.params.longURL,
     users: users,
-    user_id: req.cookies.user_id
+    user_id: req.cookies["user_id"]
   };
   res.render("urls_login", templateVars);
 });
@@ -116,7 +116,7 @@ app.get("/register", (req, res) => {
 //HomePage
 app.get("/", (req, res) => {
   const templateVars = { 
-    users: users,
+    user: users[user_id],
     user_id: req.cookies.user_id
   };
   res.render("urls_home", templateVars)
@@ -143,16 +143,18 @@ app.post("/logout", (req, res) => {
 app.post("/login", (req, res) => {
   const email = req.body.email;
   const password = req.body.password;
-  // console.log("users email", users);
-
-  // for(const user in users){
-  //   // console.log(users[user].email);
-  //   if(email === users[user].email){
-  //     console.log("email", email);
-  //     res.cookie(users[user].email);
-  //     // console.log(res)
-  // }
-  // }
+  let user_id = hasUserId(email, users);
+  console.log(email, password, user_id)
+  if (!email || !password) {
+    return res.status(400).send("Please provide both an email and password");
+  }
+  if (passwordChk(email, password, users) && user_id) {
+    console.log("post login route ", email, password, user_id)
+    req.cookies[user_id];
+    console.log("post login", req.cookies.user_id, req.cookies[user_id], req.cookies["user_id"]);
+  } else {
+    return res.status(400).send("Please provide valid email and/or password");
+  }
   res.redirect("/urls");
 });
 
@@ -208,6 +210,31 @@ app.post("/urls/:shortURL/delete", (req, res) => {
 
 
 //HELPER FUNCTIONS
+function passwordChk(email, password, users) {
+  for (const user in users) {
+    if (
+      users[user].email === email &&
+      users[user].password === password
+    ) {
+      return true;
+    }
+  }
+  return false;
+}
+
+function hasUserId(email, users) {
+  for (const user in users) {
+    console.log("1", user.email)
+    console.log("2", users[user].email)
+    console.log("3", users[user][email])
+    console.log("4", users[user]["email"])
+
+    if (users[user]["email"] === email) {
+      return users[user].user_id;
+    }
+  }
+  return false;
+}
 
 function getUserByEmail(email, users) {
   for (const user in users) {
