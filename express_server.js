@@ -150,8 +150,8 @@ app.post("/login", (req, res) => {
   }
   if (passwordChk(email, password, users) && user_id) {
     console.log("post login route ", email, password, user_id)
-    req.cookies[user_id];
-    console.log("post login", req.cookies.user_id, req.cookies[user_id], req.cookies["user_id"]);
+    req.cookies["user_id"];
+    console.log("post login route req.cookies", req.cookies.user_id, req.cookies[user_id], req.cookies["user_id"]);
   } else {
     return res.status(400).send("Please provide valid email and/or password");
   }
@@ -171,9 +171,10 @@ app.post("/register", (req, res) => {
       .status(403)
       .send("An account already exists for this email address");
   } else {
-    users[id] = {user_id, email, password}
     res.cookie("user_id", user_id);
-    console.log(user_id, email, password);
+    users[id] = {user_id, email, password}
+    console.log("post register", user_id, email, password);
+    // console.log("post register", users[id].user_id)
   res.redirect("/urls");
   }
 });
