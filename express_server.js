@@ -13,8 +13,14 @@ app.use(cookieParser())
 
 
 const urlDatabase = {
-  "b2xVn2": "http://www.lighthouselabs.ca",
-  "9sm5xK": "http://www.google.com"
+  "b2xVn2": {
+    longURL: "http://www.lighthouselabs.ca",
+    userID: "Wh1ym3"
+  },
+  "9sm5xK": {
+    longURL: "http://www.google.com",
+    userID: "M0rL0v"
+  }
 };
 
 const users = { 
@@ -45,9 +51,10 @@ app.get("/urls.json", (req, res) => {
 app.get("/urls", (req, res) => {
   let user_id = req.cookies['user_id'];
   console.log("get /urls -> user_id",user_id);
+  let urls = urlsForUser(user_id, urlDatabase);
   const templateVars = { 
     user: users[user_id],
-    urls: urlDatabase,
+    urls: urls,
     user_id: req.cookies.user_id
   };
   res.render("urls_index", templateVars);
@@ -234,6 +241,17 @@ app.post("/urls/:shortURL/delete", (req, res) => {
 
 
 //HELPER FUNCTIONS
+function urlsForUser(user_id, urlDatabase) {
+  let userUrl = {};
+  for (const url in urlDatabase) {
+    if (urlDatabase[url].userID === user_id) {
+      userUrl[url] = urlDatabase[url].longURL;
+    }
+  }
+  return userUrl;
+}
+
+
 function passwordChk(email, password, users) {
   for (const user in users) {
     if (
