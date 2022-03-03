@@ -43,7 +43,7 @@ app.get("/urls.json", (req, res) => {
 //redirect links
 //When sending variables to an EJS template, we need to send them inside an object, even if we are only sending one variable. This is so we can use the key of that variable
 app.get("/urls", (req, res) => {
-  let user_id = req.cookies.user_id;
+  let user_id = req.cookies['user_id'];
   console.log("get /urls -> user_id",user_id);
   const templateVars = { 
     user: users[user_id],
@@ -54,10 +54,10 @@ app.get("/urls", (req, res) => {
 });
 
 app.get("/urls/new", (req, res) => {
-  if (!req.cookies.user_id) {
+  if (!req.cookies['user_id']) {
     return res.redirect("/login");
   }
-  let user_id = req.cookies.user_id;
+  let user_id = req.cookies['user_id'];
   const templateVars = { 
     shortURL: req.params.shortURL, 
     longURL: req.params.longURL,
@@ -68,10 +68,10 @@ app.get("/urls/new", (req, res) => {
 });
 
 app.get("/urls/:id", (req, res) => {
-  if (!req.cookies.user_id) {
+  if (!req.cookies['user_id']) {
     return res.redirect("/login");
   }
-  let user_id = req.cookies.user_id;
+  let user_id = req.cookies['user_id'];
   const templateVars = {
     longURL: urlDatabase[req.params.id].longURL,
     shortURL: req.params.id,
@@ -86,10 +86,10 @@ app.get("/urls/:id", (req, res) => {
 // The : in front of id indicates that id is a route parameter. This means that the value in this part of the url will be available in the req.params object.
 //to show the user the newly created link
 app.get("/urls/:shortURL", (req, res) => {
-  if (!req.cookies.user_id) {
+  if (!req.cookies['user_id']) {
     return res.redirect("/login");
   }
-  let user_id = req.cookies.user_id;
+  let user_id = req.cookies['user_id'];
   const templateVars = { 
     shortURL: req.params.shortURL, 
     longURL: req.params.longURL,
@@ -109,7 +109,7 @@ app.get("/u/:shortURL", (req, res) => {
 });
 
 app.get("/login", (req, res) => {
-  let user_id = req.cookies.user_id;
+  let user_id = req.cookies['user_id'];
   const templateVars = { 
     shortURL: req.params.shortURL, 
     longURL: req.params.longURL,
@@ -121,7 +121,7 @@ app.get("/login", (req, res) => {
 });
 
 app.get("/register", (req, res) => {
-  let user_id = req.cookies.user_id;
+  let user_id = req.cookies['user_id'];
   const templateVars = { 
     shortURL: req.params.shortURL, 
     longURL: req.params.longURL,
@@ -134,7 +134,7 @@ app.get("/register", (req, res) => {
 
 //HomePage
 app.get("/", (req, res) => {
-  let user_id = req.cookies.user_id;
+  let user_id = req.cookies['user_id'];
   const templateVars = { 
     user: users[user_id],
     user_id: req.cookies.user_id
@@ -170,7 +170,7 @@ app.post("/login", (req, res) => {
   }
   if (passwordChk(email, password, users) && user_id) {
     console.log("post login route ", email, password, user_id)
-    req.cookies.user_id;
+    res.cookie('user_id', `${user_id}`);
     // if(req.cookies.user_id){
     //   console.log("yes")
     // }
@@ -194,8 +194,8 @@ app.post("/register", (req, res) => {
       .status(403)
       .send("An account already exists for this email address");
   } else {
-    res.cookie("user_id", user_id);
     users[id] = {user_id, email, password}
+    res.cookie("user_id", `${user_id}`);
     console.log("post register", user_id, email, password);
     // console.log("post register", users[id].user_id)
   res.redirect("/urls");
