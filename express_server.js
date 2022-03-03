@@ -267,7 +267,7 @@ function passwordChk(email, password, users) {
   for (const user in users) {
     if (
       users[user].email === email &&
-      users[user].password === password
+      bcrypt.compareSync(password, users[user].password)
     ) {
       return true;
     }
