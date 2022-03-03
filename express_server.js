@@ -210,14 +210,16 @@ app.post("/register", (req, res) => {
 
 app.post("/urls/:id/update", (req, res) => {
   let shortURL = req.params.id;
-  // console.log("shortURL: ", shortURL);
-  if(req.session.user_id !== urlDatabase[shortURL].user_id){
+  console.log("shortURL: ", shortURL);
+  console.log(req.session.user_id);
+  console.log(urlDatabase[shortURL].userID);  //undefined
+  if(req.session.user_id !== urlDatabase[shortURL].userID){
     return res.status(401).send("Unauthorized URL Update");
   }
   let longURL = req.body.longURL;
-  // console.log("longURL: ",longURL);
-  urlDatabase[shortURL] = longURL;
-  // console.log("store short & LongURL :", shortURL, longURL);
+  console.log("longURL: ",longURL);
+  urlDatabase[shortURL].longURL = longURL;
+  console.log("store short & LongURL :", shortURL, longURL);
   res.redirect("/urls");
 });
 
