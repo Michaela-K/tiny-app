@@ -10,7 +10,7 @@ app.use(bodyParser.urlencoded({extended: true}));
 const cookieParser = require('cookie-parser')
 app.use(cookieParser())
 
-
+const bcrypt = require('bcryptjs');
 
 const urlDatabase = {
   "b2xVn2": {
@@ -27,12 +27,12 @@ const users = {
   "Wh1ym3": {
     user_id: "Wh1ym3", 
     email: "user@example.com", 
-    password: "purple"
+    password: bcrypt.hashSync("password", 10)
   },
  "M0rL0v": {
     user_id: "M0rL0v", 
     email: "user2@example.com", 
-    password: "funky"
+    password: bcrypt.hashSync("password", 10)
   }
 }
 
@@ -205,9 +205,10 @@ app.post("/register", (req, res) => {
       .status(403)
       .send("An account already exists for this email address");
   } else {
-    users[id] = {user_id, email, password}
-    res.cookie("user_id", `${user_id}`);
+    users[id] = {user_id, email, password: bcrypt.hashSync(password, 10)}
+    res.cookie("user_id", user_id);
     console.log("post register", user_id, email, password);
+    console.log("hashed password", users[user_id].password)
     // console.log("post register", users[id].user_id)
   res.redirect("/urls");
   }
@@ -216,7 +217,7 @@ app.post("/register", (req, res) => {
 app.post("/urls/:id/update", (req, res) => {
   let shortURL = req.params.id;
   // console.log("shortURL: ", shortURL);
-  if(req.cookies.user_id !== urlDatabase[shortURL].userID){
+  if(req.cookies.user_id !== urlDatabase[shortURL].user_id){
     return res.status(401).send("Unauthorized URL Update");
   }
   let longURL = req.body.longURL;
