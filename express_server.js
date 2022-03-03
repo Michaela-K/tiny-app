@@ -104,7 +104,9 @@ app.get("/urls/:shortURL", (req, res) => {
 
 app.get("/u/:shortURL", (req, res) => {
   const shortURL = req.params.shortURL;
-  const longURL = urlDatabase[req.params.shortURL];
+  // console.log(shortURL);
+  const longURL = urlDatabase[req.params.shortURL].longURL;
+  // console.log(longURL);
   if (shortURL == undefined || longURL == undefined) {
     return res.status(401).send("Inaccurate URL");
   }
