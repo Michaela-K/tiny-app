@@ -44,7 +44,7 @@ app.get("/urls.json", (req, res) => {
 //When sending variables to an EJS template, we need to send them inside an object, even if we are only sending one variable. This is so we can use the key of that variable
 app.get("/urls", (req, res) => {
   let user_id = req.cookies.user_id;
-  console.log("user_id",user_id);
+  console.log("get /urls -> user_id",user_id);
   const templateVars = { 
     user: users[user_id],
     urls: urlDatabase,
@@ -68,6 +68,9 @@ app.get("/urls/new", (req, res) => {
 });
 
 app.get("/urls/:id", (req, res) => {
+  if (!req.cookies.user_id) {
+    return res.redirect("/login");
+  }
   let user_id = req.cookies.user_id;
   const templateVars = {
     longURL: urlDatabase[req.params.id].longURL,
@@ -83,6 +86,9 @@ app.get("/urls/:id", (req, res) => {
 // The : in front of id indicates that id is a route parameter. This means that the value in this part of the url will be available in the req.params object.
 //to show the user the newly created link
 app.get("/urls/:shortURL", (req, res) => {
+  if (!req.cookies.user_id) {
+    return res.redirect("/login");
+  }
   let user_id = req.cookies.user_id;
   const templateVars = { 
     shortURL: req.params.shortURL, 
@@ -94,7 +100,11 @@ app.get("/urls/:shortURL", (req, res) => {
 });
 
 app.get("/u/:shortURL", (req, res) => {
+  const shortURL = req.params.shortURL;
   const longURL = urlDatabase[req.params.shortURL];
+  if (shortURL == undefined || longURL == undefined) {
+    return res.status(401).send("Inaccurate URL");
+  }
   res.redirect(longURL);
 });
 
@@ -160,8 +170,11 @@ app.post("/login", (req, res) => {
   }
   if (passwordChk(email, password, users) && user_id) {
     console.log("post login route ", email, password, user_id)
-    req.cookies["user_id"];
-    console.log("post login route req.cookies", req.cookies.user_id, req.cookies[user_id], req.cookies["user_id"]);
+    req.cookies.user_id;
+    // if(req.cookies.user_id){
+    //   console.log("yes")
+    // }
+    // console.log("post login route req.cookies", req.cookies.user_id, req.cookies[user_id], req.cookies["user_id"]);
   } else {
     return res.status(400).send("Please provide valid email and/or password");
   }
