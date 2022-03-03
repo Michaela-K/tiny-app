@@ -50,6 +50,9 @@ app.get("/urls.json", (req, res) => {
 //When sending variables to an EJS template, we need to send them inside an object, even if we are only sending one variable. This is so we can use the key of that variable
 app.get("/urls", (req, res) => {
   let user_id = req.cookies['user_id'];
+  if (!req.cookies.user_id) {
+    res.status(400).send("Please Log In to view Urls");
+  }
   console.log("get /urls -> user_id",user_id);
   let urls = urlsForUser(user_id, urlDatabase);
   const templateVars = { 
@@ -213,6 +216,9 @@ app.post("/register", (req, res) => {
 app.post("/urls/:id/update", (req, res) => {
   let shortURL = req.params.id;
   // console.log("shortURL: ", shortURL);
+  if(req.cookies.user_id !== urlDatabase[shortURL].userID){
+    return res.status(401).send("Unauthorized URL Update");
+  }
   let longURL = req.body.longURL;
   // console.log("longURL: ",longURL);
   urlDatabase[shortURL] = longURL;
@@ -228,6 +234,9 @@ app.post("/urls/:id/update", (req, res) => {
 
 app.post("/urls/:shortURL/delete", (req, res) => {
   const shortURL = req.params.shortURL;
+  if(req.cookies.user_id !== urlDatabase[shortURL].userID){
+    return res.status(401).send("Unauthorized URL Delete");
+  }
   delete urlDatabase[shortURL];
   res.redirect("/urls");
 });
