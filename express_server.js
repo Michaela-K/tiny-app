@@ -54,6 +54,7 @@ app.get("/urls", (req, res) => {
 });
 
 app.get("/urls/new", (req, res) => {
+  let user_id = req.cookies.user_id;
   const templateVars = { 
     shortURL: req.params.shortURL, 
     longURL: req.params.longURL,
@@ -64,6 +65,7 @@ app.get("/urls/new", (req, res) => {
 });
 
 app.get("/urls/:id", (req, res) => {
+  let user_id = req.cookies.user_id;
   const templateVars = {
     longURL: urlDatabase[req.params.id].longURL,
     shortURL: req.params.id,
@@ -78,6 +80,7 @@ app.get("/urls/:id", (req, res) => {
 // The : in front of id indicates that id is a route parameter. This means that the value in this part of the url will be available in the req.params object.
 //to show the user the newly created link
 app.get("/urls/:shortURL", (req, res) => {
+  let user_id = req.cookies.user_id;
   const templateVars = { 
     shortURL: req.params.shortURL, 
     longURL: req.params.longURL,
@@ -93,21 +96,24 @@ app.get("/u/:shortURL", (req, res) => {
 });
 
 app.get("/login", (req, res) => {
-  
+  let user_id = req.cookies.user_id;
   const templateVars = { 
     shortURL: req.params.shortURL, 
     longURL: req.params.longURL,
     users: users,
-    user_id: req.cookies["user_id"]
+    user: users[user_id],
+    user_id: req.cookies.user_id
   };
   res.render("urls_login", templateVars);
 });
 
 app.get("/register", (req, res) => {
+  let user_id = req.cookies.user_id;
   const templateVars = { 
     shortURL: req.params.shortURL, 
     longURL: req.params.longURL,
     users: users,
+    user: users[user_id],
     user_id: req.cookies.user_id
   };
   res.render("urls_register", templateVars);
@@ -115,6 +121,7 @@ app.get("/register", (req, res) => {
 
 //HomePage
 app.get("/", (req, res) => {
+  let user_id = req.cookies.user_id;
   const templateVars = { 
     user: users[user_id],
     user_id: req.cookies.user_id
