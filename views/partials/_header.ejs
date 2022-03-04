@@ -1,17 +1,17 @@
 <header>
-  <nav class="navbar navbar-expand-md navbar-dark bg-success">
-    <a class="navbar-brand" href="/">TinyApp</a>
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+  <nav class="navbar navbar-expand-md" style="background-color: #5d41c2;">
+    <a class="navbar-brand" href="/" style="color: #DBFE87;"><strong>TinyApp</strong></a>
+    <button class="navbar-toggler navbar-dark" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
     <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
       <% if(user_id){ %>
         <div class="navbar-nav">
-          <a class="nav-item nav-link" href="/urls">My URLs</a>
-          <a class="nav-item nav-link" href="/urls/new">Create New URL</a>
+          <a class="nav-item nav-link" href="/urls" style="color: #03B5AA;" >My URLs</a>
+          <a class="nav-item nav-link" href="/urls/new" style="color: #03B5AA;">Create New URL</a>
         </div>
         <% } else{ %>
-          <a class="nav-item nav-link" href="/urls/new">Get Started</a>
+          <a class="nav-item nav-link" href="/urls/new" style="color: #03B5AA;margin-right: 2em;">Get Started</a>
         <% } %>
     </div>
 
@@ -29,12 +29,12 @@
           <form class="form-inline" action="/login" method="GET">
             <div class="form-group mb-2">
               <!-- <input class="form-control" type="text" name="username" placeholder="username" style="width: 250px; margin: 1em"> -->
-              <button type="submit" class="btn btn-outline-secondary" style="margin-right: 2rem">Log In</button>
+              <button type="submit" class="btn btn-outline-info" style="color: #DBFE87;margin-right: 1em;">Log In</button>
             </div>
           </form>
           <form class="form-inline justify-content-right" action="/register" method="GET">
             <div class="form-group mb-2">
-              <button type="submit" class="btn btn-outline-secondary"> <a href="/register">Register</a> </button>
+              <button type="submit" class="btn btn-outline-info" style="color: #DBFE87;">Register</button>
             </div>
           </form>
         <% } %>

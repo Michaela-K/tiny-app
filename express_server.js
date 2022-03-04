@@ -157,6 +157,7 @@ app.post("/urls", (req, res) => {
   const user_id = req.session.user_id;
   console.log("shorturl & longURL", shortURL, longURL);
   urlDatabase[shortURL] = {longURL: longURL, userID: user_id};
+  console.log("urlDatabase[shortURL]",urlDatabase[shortURL]);
   res.redirect("/urls");
 });
 
