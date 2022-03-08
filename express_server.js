@@ -33,6 +33,12 @@ app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
 });
 
+// //flash messsages
+// app.use((req, res, next) =>{
+//   res.locals.message = req.session.message;
+//   delete req.session.message;
+//   next();
+// })
 
 //GET
 app.get("/urls.json", (req, res) => {
@@ -43,9 +49,9 @@ app.get("/urls.json", (req, res) => {
 //When sending variables to an EJS template, we need to send them inside an object, even if we are only sending one variable. This is so we can use the key of that variable
 app.get("/urls", (req, res) => {
   const user_id = req.session.user_id;
-  if (!req.session.user_id) {
-    res.status(400).send("Please Log In to view Urls");
-  }
+  // if (!req.session.user_id) {
+  //   res.status(400).send("Please Log In to view Urls");
+  // }
   console.log("get /urls -> user_id",user_id);
   let urls = urlsForUser(user_id, urlDatabase);
   const templateVars = {
@@ -57,9 +63,9 @@ app.get("/urls", (req, res) => {
 });
 
 app.get("/urls/new", (req, res) => {
-  if (!req.session.user_id) {
-    return res.redirect("/login");
-  }
+  // if (!req.session.user_id) {
+  //   return res.redirect("/login");
+  // }
   let user_id = req.session.user_id;
   const templateVars = { 
     shortURL: req.params.shortURL, 
@@ -89,6 +95,9 @@ app.get("/urls/:id", (req, res) => {
 // The : in front of id indicates that id is a route parameter. This means that the value in this part of the url will be available in the req.params object.
 //to show the user the newly created link
 app.get("/urls/:shortURL", (req, res) => {
+  if (req.session.user_id !== urlDatabase[shortURL].userID) {
+    return res.redirect("/login");
+  }
   if (!req.session.user_id) {
     return res.redirect("/login");
   }
@@ -171,20 +180,23 @@ app.post("/login", (req, res) => {
   const email = req.body.email;
   const password = req.body.password;
   let user_id = hasUserId(email, users);
-  console.log(email, password, user_id)
+  // let message = req.session.message;
+  // req.session.message  = {
+  //   type: 'danger',
+  //   message: 'Please provide both an email and password'}
+  // console.log(email, password, user_id)
   if (!email || !password) {
     return res.status(400).send("Please provide both an email and password");
-  }
+    // message = req.session.message;
+    // delete req.session.message;
+    }
   if (passwordChk(email, password, users) && user_id) {
     console.log("post login route ", email, password, user_id)
     req.session.user_id = user_id;
-    // if(req.session.user_id){
-    //   console.log("yes")
-    // }
-    // console.log("post login route req.session", req.session.user_id, req.session[user_id], req.session["user_id"]);
   } else {
     return res.status(400).send("Please provide valid email and/or password");
   }
+  // const templateVars = {mesage: req.session.mesage}
   res.redirect("/urls");
 });
 
