@@ -27,7 +27,7 @@ const {
   generateRandomString,
 } = require("./helpers");
 
-const { urlDatabase, users } = require("./databases");
+const { urlDatabase, users} = require("./databases");
 
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
@@ -77,9 +77,15 @@ app.get("/urls/new", (req, res) => {
 });
 
 app.get("/urls/:id", (req, res) => {
-  if (!req.session.user_id) {
+  let shortURL = req.params.id;
+  // console.log("urlD", urlDatabase);
+  // console.log("shortURL", shortURL);
+  // console.log("url/short - urlD[shortURL].userID", urlDatabase[shortURL].userID)
+  // console.log("url/short - req.session.user_id", req.session.user_id)
+  if (!req.session.user_id || req.session.user_id !== urlDatabase[shortURL].userID) {
     return res.redirect("/login");
   }
+
   let user_id = req.session.user_id;
   const templateVars = {
     longURL: urlDatabase[req.params.id].longURL,
@@ -94,22 +100,23 @@ app.get("/urls/:id", (req, res) => {
 
 // The : in front of id indicates that id is a route parameter. This means that the value in this part of the url will be available in the req.params object.
 //to show the user the newly created link
-app.get("/urls/:shortURL", (req, res) => {
-  if (req.session.user_id !== urlDatabase[shortURL].userID) {
-    return res.redirect("/login");
-  }
-  if (!req.session.user_id) {
-    return res.redirect("/login");
-  }
-  let user_id = req.session.user_id;
-  const templateVars = { 
-    shortURL: req.params.shortURL, 
-    longURL: req.params.longURL,
-    user: users[user_id],
-    user_id: req.session.user_id
-  };
-  res.render("urls_show", templateVars);
-});
+
+// app.get("/urls/:shortURL", (req, res) => {
+//   if (req.session.user_id !== urlDatabase[shortURL].userID) {
+//     return res.redirect("/login");
+//   }
+//   if (!req.session.user_id) {
+//     return res.redirect("/login");
+//   }
+//   let user_id = req.session.user_id;
+//   const templateVars = { 
+//     shortURL: req.params.shortURL, 
+//     longURL: req.params.longURL,
+//     user: users[user_id],
+//     user_id: req.session.user_id
+//   };
+//   res.render("urls_show", templateVars);
+// });
 
 app.get("/u/:shortURL", (req, res) => {
   const shortURL = req.params.shortURL;
@@ -177,7 +184,7 @@ app.post("/logout", (req, res) => {
 });
 
 app.post("/login", (req, res) => {
-  const email = req.body.email;
+  const email = req.body.email.trim();
   const password = req.body.password;
   let user_id = hasUserId(email, users);
   // let message = req.session.message;
@@ -203,7 +210,7 @@ app.post("/login", (req, res) => {
 app.post("/register", (req, res) => {
   const id = generateRandomString(); 
   const user_id = id;
-  const email = req.body.email;
+  const email = req.body.email.trim();
   const password = req.body.password;
 
   if (!email || !password) {
