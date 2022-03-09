@@ -33,12 +33,6 @@ app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
 });
 
-// //flash messsages
-// app.use((req, res, next) =>{
-//   res.locals.message = req.session.message;
-//   delete req.session.message;
-//   next();
-// })
 
 //GET
 app.get("/urls.json", (req, res) => {
@@ -46,13 +40,8 @@ app.get("/urls.json", (req, res) => {
 });
 
 //redirect links
-//When sending variables to an EJS template, we need to send them inside an object, even if we are only sending one variable. This is so we can use the key of that variable
 app.get("/urls", (req, res) => {
   const user_id = req.session.user_id;
-  // if (!req.session.user_id) {
-  //   res.status(400).send("Please Log In to view Urls");
-  // }
-  console.log("get /urls -> user_id",user_id);
   let urls = urlsForUser(user_id, urlDatabase);
   const templateVars = {
     user: users[user_id],
@@ -63,9 +52,6 @@ app.get("/urls", (req, res) => {
 });
 
 app.get("/urls/new", (req, res) => {
-  // if (!req.session.user_id) {
-  //   return res.redirect("/login");
-  // }
   let user_id = req.session.user_id;
   const templateVars = { 
     shortURL: req.params.shortURL, 
@@ -78,10 +64,6 @@ app.get("/urls/new", (req, res) => {
 
 app.get("/urls/:id", (req, res) => {
   let shortURL = req.params.id;
-  // console.log("urlD", urlDatabase);
-  // console.log("shortURL", shortURL);
-  // console.log("url/short - urlD[shortURL].userID", urlDatabase[shortURL].userID)
-  // console.log("url/short - req.session.user_id", req.session.user_id)
   if (!req.session.user_id || req.session.user_id !== urlDatabase[shortURL].userID) {
     return res.redirect("/login");
   }
@@ -95,34 +77,10 @@ app.get("/urls/:id", (req, res) => {
   };
   return res.render("urls_show", templateVars);
 });
-//is the urls/id the same as urls shortURL?
-
-
-// The : in front of id indicates that id is a route parameter. This means that the value in this part of the url will be available in the req.params object.
-//to show the user the newly created link
-
-// app.get("/urls/:shortURL", (req, res) => {
-//   if (req.session.user_id !== urlDatabase[shortURL].userID) {
-//     return res.redirect("/login");
-//   }
-//   if (!req.session.user_id) {
-//     return res.redirect("/login");
-//   }
-//   let user_id = req.session.user_id;
-//   const templateVars = { 
-//     shortURL: req.params.shortURL, 
-//     longURL: req.params.longURL,
-//     user: users[user_id],
-//     user_id: req.session.user_id
-//   };
-//   res.render("urls_show", templateVars);
-// });
 
 app.get("/u/:shortURL", (req, res) => {
   const shortURL = req.params.shortURL;
-  // console.log(shortURL);
   const longURL = urlDatabase[req.params.shortURL].longURL;
-  // console.log(longURL);
   if (shortURL == undefined || longURL == undefined) {
     return res.status(401).send("Inaccurate URL");
   }
@@ -171,9 +129,7 @@ app.post("/urls", (req, res) => {
   const shortURL = generateRandomString();
   const longURL = req.body.longURL;
   const user_id = req.session.user_id;
-  console.log("shorturl & longURL", shortURL, longURL);
   urlDatabase[shortURL] = {longURL: longURL, userID: user_id};
-  console.log("urlDatabase[shortURL]",urlDatabase[shortURL]);
   res.redirect("/urls");
 });
 
@@ -187,23 +143,14 @@ app.post("/login", (req, res) => {
   const email = req.body.email.trim();
   const password = req.body.password;
   let user_id = hasUserId(email, users);
-  // let message = req.session.message;
-  // req.session.message  = {
-  //   type: 'danger',
-  //   message: 'Please provide both an email and password'}
-  // console.log(email, password, user_id)
   if (!email || !password) {
     return res.status(400).send("Please provide both an email and password");
-    // message = req.session.message;
-    // delete req.session.message;
     }
   if (passwordChk(email, password, users) && user_id) {
-    console.log("post login route ", email, password, user_id)
     req.session.user_id = user_id;
   } else {
     return res.status(400).send("Please provide valid email and/or password");
   }
-  // const templateVars = {mesage: req.session.mesage}
   res.redirect("/urls");
 });
 
@@ -222,34 +169,19 @@ app.post("/register", (req, res) => {
   } else {
     users[id] = {user_id, email, password: bcrypt.hashSync(password, 10)}
     req.session.user_id = user_id;
-    console.log("req.session.user_id", user_id);
-    console.log("post register", user_id, email, password);
-    console.log("hashed password", users[user_id].password)
-    // console.log("post register", users[id].user_id)
   res.redirect("/urls");
   }
 });
 
 app.post("/urls/:id/update", (req, res) => {
   let shortURL = req.params.id;
-  console.log("shortURL: ", shortURL);
-  console.log(req.session.user_id);
-  console.log(urlDatabase[shortURL].userID);  //undefined
   if(req.session.user_id !== urlDatabase[shortURL].userID){
     return res.status(401).send("Unauthorized URL Update");
   }
   let longURL = req.body.longURL;
-  console.log("longURL: ",longURL);
   urlDatabase[shortURL].longURL = longURL;
-  console.log("store short & LongURL :", shortURL, longURL);
   res.redirect("/urls");
 });
-
-// app.post("/urls/:id", (req, res) => {
-//   let shortURL = req.params.shortURL;
-//   let longURL = req.body.longURL;
-//   res.redirect("/urls");
-// });
 
 app.post("/urls/:shortURL/delete", (req, res) => {
   const shortURL = req.params.shortURL;
