@@ -25,11 +25,6 @@ function passwordChk(email, password, users) {
 
 function hasUserId(email, users) {
   for (const user in users) {
-    console.log("1", user.email);
-    console.log("2", users[user].email);
-    console.log("3", users[user][email]);
-    console.log("4", users[user]["email"]);
-
     if (users[user]["email"] === email) {
       return users[user].user_id;
     }
