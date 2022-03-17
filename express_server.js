@@ -1,4 +1,5 @@
 const express = require("express");
+const methodOverride = require('method-override')
 const app = express();
 const PORT = 8080;
 
@@ -10,6 +11,9 @@ app.use(bodyParser.urlencoded({ extended: true }));
 const cookieSession = require("cookie-session");
 
 const bcrypt = require("bcryptjs");
+
+// override with POST having ?_method=DELETE
+app.use(methodOverride('_method'))
 
 app.use(
   cookieSession({
@@ -138,7 +142,7 @@ app.post("/logout", (req, res) => {
   res.redirect("/urls");
 });
 
-app.post("/login", (req, res) => {
+app.put("/login", (req, res) => {
   const email = req.body.email.trim();
   const password = req.body.password;
   let user_id = hasUserId(email, users);
@@ -172,7 +176,7 @@ app.post("/register", (req, res) => {
   }
 });
 
-app.post("/urls/:id/update", (req, res) => {
+app.put("/urls/:id/update", (req, res) => {
   let shortURL = req.params.id;
   if (req.session.user_id !== urlDatabase[shortURL].userID) {
     return res.status(401).send("Unauthorized URL Update");
@@ -182,7 +186,7 @@ app.post("/urls/:id/update", (req, res) => {
   res.redirect("/urls");
 });
 
-app.post("/urls/:shortURL/delete", (req, res) => {
+app.delete("/urls/:shortURL/delete", (req, res) => {
   const shortURL = req.params.shortURL;
   if (req.session.user_id !== urlDatabase[shortURL].userID) {
     return res.status(401).send("Unauthorized URL Delete");
